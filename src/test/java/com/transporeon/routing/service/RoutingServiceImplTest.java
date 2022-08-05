@@ -1,17 +1,13 @@
 package com.transporeon.routing.service;
 
 import com.transporeon.routing.Route;
-import com.transporeon.routing.entity.Airport;
-import com.transporeon.routing.repository.AirportRepository;
-import com.transporeon.routing.repository.AirportRepositoryImpl;
+import com.transporeon.routing.repository.FlightRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 public class RoutingServiceImplTest {
 
@@ -20,7 +16,7 @@ public class RoutingServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        routingService = new RoutingServiceImpl(new AirportRepositoryImpl(Path.of("src/main/resources/airports.csv")));
+        routingService = new RoutingServiceImpl(new FlightRepositoryImpl(Path.of("src/main/resources/flights.csv")));
     }
 
     @Test
@@ -33,7 +29,7 @@ public class RoutingServiceImplTest {
 
     @Test
     void shouldReturnSmartRoute() {
-        routingService = new RoutingServiceImpl(new AirportRepositoryImpl(Path.of("src/test/resources/airports-trimmed-1.csv")));
+        routingService = new RoutingServiceImpl(new FlightRepositoryImpl(Path.of("src/test/resources/airports-trimmed-1.csv")));
 
 
     }
