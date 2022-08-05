@@ -20,9 +20,17 @@ public class RoutingServiceImplTest {
     }
 
     @Test
-    void shouldReturnRoute() {
-        String iataCode1 = "00A", iataCode2 = "RJX7";
+    void shouldReturnSimpleRoute() {
+        String iataCode1 = "AER", iataCode2 = "KZN";
         Route expectedRoute = new Route(iataCode1).add(iataCode2);
+        Route route = routingService.findRoute(iataCode1, iataCode2);
+        assertEquals(expectedRoute, route);
+    }
+
+    @Test
+    void shouldReturnCompoundRoute() {
+        String iataCode1 = "AER", iataCode2 = "LED";
+        Route expectedRoute = new Route(iataCode1).add("KZN").add(iataCode2);
         Route route = routingService.findRoute(iataCode1, iataCode2);
         assertEquals(expectedRoute, route);
     }
