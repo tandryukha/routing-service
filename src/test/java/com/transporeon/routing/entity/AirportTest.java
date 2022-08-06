@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.within;
 class AirportTest {
 
     /**
-     * Expected distance calculator https://www.sunearthtools.com/tools/distance.php
+     * <a href="https://www.sunearthtools.com/tools/distance.php">Expected distance calculator</a>
      */
     @ParameterizedTest
     @CsvSource({

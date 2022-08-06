@@ -41,10 +41,10 @@ public class Airport {
      * note that angles need to be in radians to pass to trig functions!
      *
      * Read more:
-     * https://www.movable-type.co.uk/scripts/latlong.html,
-     * https://www.geeksforgeeks.org/haversine-formula-to-find-distance-between-two-points-on-a-sphere/
+     * <a href="https://www.movable-type.co.uk/scripts/latlong.html">link1</a>,
+     * <a href="https://www.geeksforgeeks.org/haversine-formula-to-find-distance-between-two-points-on-a-sphere/">link2</a>
      *
-     * @param other - Airport to calculate distance to
+     * @param other Airport to calculate distance to
      * @return distance between two airports in km
      *
      *
