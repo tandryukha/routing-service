@@ -6,6 +6,19 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
 public class Route {
+    @Override
+    public String toString() {
+        Node<String> current = start;
+        StringBuilder sb = new StringBuilder();
+        String prefix = "";
+        do {
+            sb.append(prefix).append(current.getValue());
+            prefix = "->";
+            current = current.getNext();
+        } while (current!=null);
+        return sb.toString();
+    }
+
     private final Node<String> start;
     private Node<String> end;
 
@@ -26,5 +39,9 @@ public class Route {
     private static class Node<T> {
         private T value;
         private Node<T> next;
+
+        public boolean hasNext() {
+            return next != null;
+        }
     }
 }

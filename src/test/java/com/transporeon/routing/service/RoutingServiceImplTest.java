@@ -21,25 +21,16 @@ public class RoutingServiceImplTest {
 
     @Test
     void shouldReturnSimpleRoute() {
-        String iataCode1 = "AER", iataCode2 = "KZN";
-        Route expectedRoute = new Route(iataCode1).add(iataCode2);
-        Route route = routingService.findRoute(iataCode1, iataCode2);
+        Route expectedRoute = new Route("AER").add("KZN");
+        Route route = routingService.findRoute("AER", "KZN");
         assertEquals(expectedRoute, route);
     }
 
     @Test
     void shouldReturnCompoundRoute() {
-        String iataCode1 = "AER", iataCode2 = "LED";
-        Route expectedRoute = new Route(iataCode1).add("KZN").add(iataCode2);
-        Route route = routingService.findRoute(iataCode1, iataCode2);
+        Route expectedRoute = new Route("AER").add("KZN").add("LED");
+        Route route = routingService.findRoute("AER", "LED");
         assertEquals(expectedRoute, route);
-    }
-
-    @Test
-    void shouldReturnSmartRoute() {
-        routingService = new RoutingServiceImpl(new FlightRepositoryImpl(Path.of("src/test/resources/airports-trimmed-1.csv")));
-
-
     }
 
 }
