@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -39,9 +38,9 @@ public class RoutingServiceImpl implements RoutingService {
     // Dijkstra gives us O(3.5K+67K*log3.5K) = ~240K operations  vs brute force that will give us 67K + 20^4 = 230K
     // According, to my calculations above, we can say that both algorithms are of the same complexity given that amount of max stops stays low
     // but to make it future-proof, not just tailored to the current requirements, we'd better use Dijkstra.
-    // At least it's not worse that brute-forse and can outperform brute-force given more stops
+    // At least it's not worse that brute-force and can outperform brute-force given more stops
     @Override
-    public Optional<Route> findRoute(String sourceAirport, String destAirport) {
+    public Optional<Route<Airport>> findRoute(String sourceAirport, String destAirport) {
         Optional<List<Airport>> shortestPath = pathFinder.findShortestPath(airportFlights, airports.get(sourceAirport), airports.get(destAirport), maxStops);
         if (shortestPath.isEmpty()) return Optional.empty();
         return Optional.of(toRoute(shortestPath.get()));

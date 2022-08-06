@@ -1,9 +1,10 @@
 package com.transporeon.routing.service;
 
 import com.transporeon.routing.Route;
+import com.transporeon.routing.entity.Airport;
 
 import java.util.Optional;
 
 public interface RoutingService {
-    Optional<Route> findRoute(String iataCode1, String iataCode2);
+    Optional<Route<Airport>> findRoute(String iataCode1, String iataCode2);
 }
