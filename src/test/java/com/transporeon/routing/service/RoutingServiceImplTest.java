@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RoutingServiceImplTest {
 
-
     private RoutingService routingService;
 
     @BeforeEach
@@ -20,14 +19,14 @@ public class RoutingServiceImplTest {
     }
 
     @Test
-    void shouldReturnSimpleRoute() {
+    void shouldReturnDirectRoute() {
         Route expectedRoute = new Route("AER").add("KZN");
         Route route = routingService.findRoute("AER", "KZN");
         assertEquals(expectedRoute, route);
     }
 
     @Test
-    void shouldReturnCompoundRoute() {
+    void shouldReturnCompoundRoute1Stop() {
         Route expectedRoute = new Route("AER").add("KZN").add("LED");
         Route route = routingService.findRoute("AER", "LED");
         assertEquals(expectedRoute, route);
