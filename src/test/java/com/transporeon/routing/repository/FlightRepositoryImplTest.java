@@ -10,21 +10,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FlightRepositoryImplTest {
 
-    private FlightRepositoryImpl airportRepository;
+    private FlightRepositoryImpl flightRepository;
 
     @BeforeEach
     void setUp() {
-        airportRepository = new FlightRepositoryImpl(Path.of("src/main/resources/flights.csv"));
+        flightRepository = new FlightRepositoryImpl(Path.of("src/main/resources/flights.csv"));
     }
 
     @Test
     void shouldLoadAllFlightsFromCSV() {
-        assertThat(airportRepository.findAll().size()).isEqualTo(67663);
+        assertThat(flightRepository.findAll().size()).isEqualTo(67663);
     }
 
     @Test
     void shouldReadAllFieldsFromCSV() {
-        assertThat(airportRepository.findAll())
+        assertThat(flightRepository.findAll())
                 .allSatisfy(actual -> assertThat(actual).hasNoNullFieldsOrProperties());
     }
 

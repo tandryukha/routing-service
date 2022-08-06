@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
-public class Route {
+public class Route<M> {
     @Override
     public String toString() {
         Node<String> current = start;
@@ -15,20 +15,20 @@ public class Route {
             sb.append(prefix).append(current.getValue());
             prefix = "->";
             current = current.getNext();
-        } while (current!=null);
+        } while (current != null);
         return sb.toString();
     }
 
     private final Node<String> start;
     private Node<String> end;
 
-    public Route(String startValue) {
-        this.start = new Node<>(startValue, null);
+    public Route(M startHop) {
+        this.start = new Node<>(startHop.toString(), null);
         this.end = start;
     }
 
-    public Route add(String hopValue) {//todo refactor
-        Node<String> newEnd = new Node<>(hopValue, null);
+    public Route<M> add(M hopValue) {//todo refactor
+        Node<String> newEnd = new Node<>(hopValue.toString(), null);
         end.setNext(newEnd);
         end = newEnd;
         return this;
@@ -39,9 +39,5 @@ public class Route {
     private static class Node<T> {
         private T value;
         private Node<T> next;
-
-        public boolean hasNext() {
-            return next != null;
-        }
     }
 }
