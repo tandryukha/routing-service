@@ -14,14 +14,37 @@ class DijkstraPathFinderImplTest {
 
     private final PathFinder pathFinder = new DijkstraPathFinderImpl();
 
-    @Test//todo parametrized test
+    //todo parametrized tests
+
+    @Test
     void shouldFindShortestPathGivenOnlyDirectEdge() {
-        Optional<List<Integer>> shortestPath = pathFinder.findShortestPath(Map.of(
+        int source = 0;
+        int dest = 2;
+        int maxStops = 1;
+        Map<Integer, List<Node<Integer>>> adjacencyList = Map.of(
                 0, List.of(new Node<>(1, 9), new Node<>(2, 6), new Node<>(3, 5), new Node<>(4, 3)),
                 2, List.of(new Node<>(1, 2), new Node<>(3, 4))
-        ), 0, 2, 3);
+        );
+        Optional<List<Integer>> shortestPath = pathFinder.findShortestPath(adjacencyList, source, dest, maxStops);
         assertThat(shortestPath.isEmpty()).isFalse();
         assertThat(shortestPath.get()).isEqualTo(List.of(0, 2));
+    }
+
+    @Test
+    void shouldReturnPathThatDoesntExceedStopLimit() {
+        int source = 0;
+        int dest = 4;
+        int maxStops = 1;
+        Map<Integer, List<Node<Integer>>> adjacencyList = Map.of(
+                0, List.of(new Node<>(1, 1), new Node<>(5, 10)),
+                1, List.of(new Node<>(2, 1)),
+                2, List.of(new Node<>(3, 1)),
+                3, List.of(new Node<>(4, 1)),
+                5, List.of(new Node<>(4, 20))
+        );
+        Optional<List<Integer>> shortestPath = pathFinder.findShortestPath(adjacencyList, source, dest, maxStops);
+        assertThat(shortestPath.isEmpty()).isFalse();
+        assertThat(shortestPath.get()).isEqualTo(List.of(0, 5, 4));
     }
 
     @Test
