@@ -11,37 +11,40 @@ public class DijkstraPathFinderImpl implements PathFinder {
 
     //todo stop when maxStops reached
 @Override
-public <T> Optional<List<T>> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxStops) {
+public <T> Optional<List<T>> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxStops) {//todo refactor
     if (adjacencyList.isEmpty()) return Optional.empty();
-    PriorityQueue<Node<T>> heap = new PriorityQueue<>(adjacencyList.size());
-    HashMap<T, Double> distance = new HashMap<>(adjacencyList.size());
-    Set<T> visited = new HashSet<>(adjacencyList.size());
-    HashMap<T, T> paths = new HashMap<>(adjacencyList.size());
+    PriorityQueue<Node<T>> heap = new PriorityQueue<>();
+    Map<T, Double> distance = new HashMap<>();
+    Set<T> visited = new HashSet<>();//todo Another little optimisation is to use parent also for marking nodes as visited, so you don't actually need both parent and visited.
+    Map<T, T> paths = new HashMap<>();
     paths.put(source, null);
     // Distance to the source is 0
     distance.put(source, 0d);
     // Add source node to the priority queue
     heap.add(new Node<>(source, 0));
     while (!heap.isEmpty()) {
-        Node<T> closestNode = heap.remove();// Picking the minimum distance node from the priority queue
-        if(closestNode.value().equals(dest)) break;//reached the destination
-        visited.add(closestNode.value());
-        for (Node<T> node : adjacencyList.getOrDefault(closestNode.value(), emptyList())) {
-            if (visited.contains(node.value())) continue;
-            double distanceToAdjNode = node.distance() + distance.get(closestNode.value());
+        Node<T> current = heap.remove();// Picking the minimum distance node from the priority queue
+        if (current.getValue().equals(dest)) break;//reached the destination
+        int hopCount = current.getHopNumber();
+        if (hopCount > maxStops) continue;
+        visited.add(current.getValue());
+        for (Node<T> adjacent : adjacencyList.getOrDefault(current.getValue(), emptyList())) {
+            if (visited.contains(adjacent.getValue())) continue;
+            double distanceToAdjNode = adjacent.getDistance() + distance.get(current.getValue());
             // If current route is closer than what we already have
-            if (distanceToAdjNode < distance.getOrDefault(node.value(), Double.POSITIVE_INFINITY)) {
-                distance.put(node.value(), distanceToAdjNode);
-                paths.put(node.value(), closestNode.value());
+            if (distanceToAdjNode < distance.getOrDefault(adjacent.getValue(), Double.POSITIVE_INFINITY)) {
+                distance.put(adjacent.getValue(), distanceToAdjNode);
+                paths.put(adjacent.getValue(), current.getValue());
             }
-            heap.add(node);
+            adjacent.setHopNumber(hopCount + 1);
+            heap.add(adjacent);
         }
     }
 
     return getShortestPath(source, dest, paths);
 }
 
-    private static <T> Optional<List<T>> getShortestPath(T source, T dest, HashMap<T, T> paths) {
+    private static <T> Optional<List<T>> getShortestPath(T source, T dest, Map<T, T> paths) {
         if (!paths.containsKey(dest)) return Optional.empty();
         LinkedList<T> shortestPath = new LinkedList<>();
         shortestPath.add(dest);
