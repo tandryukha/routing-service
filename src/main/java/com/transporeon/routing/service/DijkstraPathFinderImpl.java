@@ -11,7 +11,7 @@ public class DijkstraPathFinderImpl implements PathFinder {
 
 @Override
 public <T> Optional<List<T>> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxHops) {//todo refactor //todo document params
-    if (adjacencyList.isEmpty()) return Optional.empty();
+    if (adjacencyList.isEmpty() || maxHops < 1) return Optional.empty();
     PriorityQueue<Node<T>> heap = new PriorityQueue<>();
     Map<T, Double> distance = new HashMap<>();
     Set<T> visited = new HashSet<>();//todo Another little optimisation is to use parent also for marking nodes as visited, so you don't actually need both parent and visited.
