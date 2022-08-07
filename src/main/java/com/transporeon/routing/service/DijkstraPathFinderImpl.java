@@ -7,6 +7,7 @@ import static java.util.Collections.emptyList;
 /**
  * Customized and tweaked to the interface Dijkstra shortest path algorithm
  */
+@Deprecated(forRemoval = true,since = "doesn't allow to find shortest path when maxHops taken into account")
 public class DijkstraPathFinderImpl implements PathFinder {
 
 @Override

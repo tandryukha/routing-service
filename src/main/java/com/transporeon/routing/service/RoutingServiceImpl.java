@@ -39,6 +39,8 @@ public class RoutingServiceImpl implements RoutingService {
     // According, to my calculations above, we can say that both algorithms are of the same complexity given that amount of max stops stays low
     // but to make it future-proof, not just tailored to the current requirements, we'd better use Dijkstra.
     // At least it's not worse that brute-force and can outperform brute-force given more stops
+
+    //If we use Bellman-Ford , the complexity will be O(V*E) = 234*10^6, So I think we'd better come up with custom brute-force
     @Override
     public Optional<Route<Airport>> findRoute(String sourceAirport, String destAirport) {
         Optional<List<Airport>> shortestPath = pathFinder.findShortestPath(airportFlights, airports.get(sourceAirport), airports.get(destAirport), maxStops);
