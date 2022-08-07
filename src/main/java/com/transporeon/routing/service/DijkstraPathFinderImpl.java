@@ -13,17 +13,18 @@ public class DijkstraPathFinderImpl implements PathFinder {
     //todo stop when maxStops reached
 @Override
 public <T> Optional<List<T>> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxStops) {
+    if (adjacencyList.isEmpty()) return Optional.empty();
     PriorityQueue<Node<T>> heap = new PriorityQueue<>(adjacencyList.size());
     HashMap<T, Double> distance = new HashMap<>(adjacencyList.size());
     Set<T> visited = new HashSet<>(adjacencyList.size());
     HashMap<T, T> paths = new HashMap<>(adjacencyList.size());
     paths.put(source, null);
-    // Add source node to the priority queue
-    heap.add(new Node<>(source, 0));
     // Distance to the source is 0
     distance.put(source, 0d);
+    // Add source node to the priority queue
+    heap.add(new Node<>(source, 0));
     while (!heap.isEmpty()) {
-        // Removing the minimum distance node from the priority queue
+        // Picking the minimum distance node from the priority queue
         Node<T> closestNode = heap.remove();
         visited.add(closestNode.value());
         for (Node<T> node : adjacencyList.getOrDefault(closestNode.value(), emptyList())) {
