@@ -9,9 +9,8 @@ import static java.util.Collections.emptyList;
  */
 public class DijkstraPathFinderImpl implements PathFinder {
 
-    //todo stop when maxStops reached
 @Override
-public <T> Optional<List<T>> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxStops) {//todo refactor
+public <T> Optional<List<T>> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxHops) {//todo refactor //todo document params
     if (adjacencyList.isEmpty()) return Optional.empty();
     PriorityQueue<Node<T>> heap = new PriorityQueue<>();
     Map<T, Double> distance = new HashMap<>();
@@ -26,7 +25,7 @@ public <T> Optional<List<T>> findShortestPath(Map<T, List<Node<T>>> adjacencyLis
         Node<T> current = heap.remove();// Picking the minimum distance node from the priority queue
         if (current.getValue().equals(dest)) break;//reached the destination
         int hopCount = current.getHopNumber();
-        if (hopCount > maxStops) continue;
+        if (hopCount >= maxHops) continue;//current path reaches maxHopsLimit
         visited.add(current.getValue());
         for (Node<T> adjacent : adjacencyList.getOrDefault(current.getValue(), emptyList())) {
             if (visited.contains(adjacent.getValue())) continue;
