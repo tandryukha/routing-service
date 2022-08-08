@@ -5,12 +5,17 @@ import com.transporeon.routing.model.Route;
 import com.transporeon.routing.repository.AirportRepositoryImpl;
 import com.transporeon.routing.repository.FlightRepositoryImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -20,10 +25,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 public class RoutingServiceImplTest {
 
+    private final Map<String, Airport> airports;
     private RoutingService routingService;
     private final PathFinder pathFinder = new DPPathFinder();
     private final AirportRepositoryImpl airportRepository = new AirportRepositoryImpl(Path.of("src/main/resources/airports.csv"));
     private final FlightRepositoryImpl flightRepository = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed.csv"));
+
+    public RoutingServiceImplTest() {
+        this.airports = group(airportRepository.findAll());//for more informative tests
+    }
 
     @BeforeEach
     void setUp() {
@@ -54,7 +64,7 @@ public class RoutingServiceImplTest {
 //        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("VKO")).add(toAirport("LED"));//1991 km
 //        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("SVO")).add(toAirport("LED"));//2003 km
 
-        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("VKO")).add(toAirport("LED"));//2005 km
+        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("VKO")).add(toAirport("LED"));//1991 km
         Route<Airport> route = routingService.findRoute("AER", "LED").orElse(null);
         assertThat(route).isEqualTo(expectedRoute);
 
@@ -62,7 +72,13 @@ public class RoutingServiceImplTest {
 
 
     private Airport toAirport(String code) {
-        return Airport.builder().coordinates("0,0").iataCode(code).build();
+        return airports.get(code);
+    }
+
+    private static Map<String, Airport> group(List<Airport> airports) {
+        return airports.stream()
+                .filter(airport -> StringUtils.isNotBlank(airport.getIataCode()))
+                .collect(toMap(Airport::getIataCode, Function.identity(), (airport, airport2) -> airport));
     }
 
 }
