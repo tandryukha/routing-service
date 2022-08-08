@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,9 +21,8 @@ class DPPathFinderTest {
                 0, List.of(new PathFinder.Node<>(1, 9), new PathFinder.Node<>(2, 6), new PathFinder.Node<>(3, 5), new PathFinder.Node<>(4, 3)),
                 2, List.of(new PathFinder.Node<>(1, 2), new PathFinder.Node<>(3, 4))
         );
-        Optional<List<Integer>> shortestPath = pathFinder.findShortestPath(adjacencyList, source, dest, maxHops);
-        assertThat(shortestPath.isEmpty()).isFalse();
-        assertThat(shortestPath.get()).isEqualTo(List.of(0, 2));
+        List<Integer> shortestPath = pathFinder.findShortestPath(adjacencyList, source, dest, maxHops);
+        assertThat(shortestPath).isEqualTo(List.of(0, 2));
     }
 
     @Test
@@ -39,9 +37,8 @@ class DPPathFinderTest {
                 3, List.of(new PathFinder.Node<>(4, 1)),
                 5, List.of(new PathFinder.Node<>(4, 20))
         );
-        Optional<List<Integer>> shortestPath = pathFinder.findShortestPath(adjacencyList, source, dest, maxHops);
-        assertThat(shortestPath.isEmpty()).isFalse();
-        assertThat(shortestPath.get()).isEqualTo(List.of(0, 5, 4));
+        List<Integer> shortestPath = pathFinder.findShortestPath(adjacencyList, source, dest, maxHops);
+        assertThat(shortestPath).isEqualTo(List.of(0, 5, 4));
     }
 
     @Test
@@ -57,9 +54,8 @@ class DPPathFinderTest {
                 "H", List.of(new PathFinder.Node<>("B", 1)),
                 "D", List.of(new PathFinder.Node<>("G", 1))
         );
-        Optional<List<String>> shortestPath = pathFinder.findShortestPath(adjacencyList, source, dest, maxHops);
-        assertThat(shortestPath.isEmpty()).isFalse();
-        assertThat(shortestPath.get()).isEqualTo(List.of("A", "D", "G", "H", "B"));
+        List<String> shortestPath = pathFinder.findShortestPath(adjacencyList, source, dest, maxHops);
+        assertThat(shortestPath).isEqualTo(List.of("A", "D", "G", "H", "B"));
     }
 
     @Test

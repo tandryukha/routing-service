@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class RoutingServiceImplTest {
 
     private RoutingService routingService;
-    private final PathFinder pathFinder = new DijkstraPathFinderImpl();
+    private final PathFinder pathFinder = new DPPathFinder();
 
     @BeforeEach
     void setUp() {

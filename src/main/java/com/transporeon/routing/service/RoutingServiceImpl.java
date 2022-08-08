@@ -43,9 +43,9 @@ public class RoutingServiceImpl implements RoutingService {
     //If we use Bellman-Ford , the complexity will be O(V*E) = 234*10^6, So I think we'd better come up with custom brute-force
     @Override
     public Optional<Route<Airport>> findRoute(String sourceAirport, String destAirport) {
-        Optional<List<Airport>> shortestPath = pathFinder.findShortestPath(airportFlights, airports.get(sourceAirport), airports.get(destAirport), maxStops);
+        List<Airport> shortestPath = pathFinder.findShortestPath(airportFlights, airports.get(sourceAirport), airports.get(destAirport), maxStops);
         if (shortestPath.isEmpty()) return Optional.empty();
-        return Optional.of(toRoute(shortestPath.get()));
+        return Optional.of(toRoute(shortestPath));
     }
 
     private Map<Airport, List<Node<Airport>>> convert(List<Flight> flights, Map<String, Airport> airports) {

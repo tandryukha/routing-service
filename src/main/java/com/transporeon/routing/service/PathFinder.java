@@ -18,7 +18,7 @@ public interface PathFinder {
      * @return
      * @param <T>
      */
-    <T> Optional<List<T>> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxHops);
+    <T> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxHops);
 
     @Data
     @RequiredArgsConstructor
