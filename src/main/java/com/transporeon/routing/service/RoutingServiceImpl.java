@@ -1,6 +1,6 @@
 package com.transporeon.routing.service;
 
-import com.transporeon.routing.Route;
+import com.transporeon.routing.model.Route;
 import com.transporeon.routing.entity.Airport;
 import com.transporeon.routing.entity.Flight;
 import com.transporeon.routing.repository.AirportRepository;

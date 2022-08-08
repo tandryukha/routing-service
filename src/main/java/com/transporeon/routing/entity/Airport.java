@@ -5,14 +5,19 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(onlyExplicitlyIncluded = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Airport {
+public class Airport implements Locatable<Airport> {
     private String ident;
     private String type;
     private String name;
+
+    @Override
+    public String toString() {
+        return iataCode;
+    }
+
     private String elevationFt;
     private String continent;
     private String isoCountry;
@@ -20,7 +25,6 @@ public class Airport {
     private String municipality;
     private String gpsCode;
     @EqualsAndHashCode.Include
-    @ToString.Include
     private String iataCode;
     private String localCode;
     /**
@@ -49,6 +53,7 @@ public class Airport {
      *
      *
      */
+    @Override
     public double distanceTo(Airport other) {
         String[] coords1 = this.coordinates.split(",");
         String[] coords2 = other.coordinates.split(",");
