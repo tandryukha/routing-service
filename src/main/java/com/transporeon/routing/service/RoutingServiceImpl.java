@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
 public class RoutingServiceImpl implements RoutingService {
@@ -23,24 +24,12 @@ public class RoutingServiceImpl implements RoutingService {
     Map<Airport, List<Node<Airport>>> airportFlights;
 
     public RoutingServiceImpl(FlightRepository flightRepository, AirportRepository airportRepository, int maxStops, PathFinder pathFinder) {
-        airports = airportRepository.findAll().stream().collect(toMap(Airport::getIataCode, Function.identity()));
-        List<Flight> flights = flightRepository.findAll();
-        airportFlights = convert(flights, airports);
+        airports = group(airportRepository.findAll());
+        airportFlights = group(flightRepository.findAll(), airports);
         this.maxStops = maxStops;
         this.pathFinder = pathFinder;
     }
 
-    //thinking process...
-    //what if you ignore dijkstra and start from sourceNode, recurse through all its edges to the number of maxStops.
-    // Brute force recursion: The time complexity will be O(E+e^k) where e - avg num of edges per node, k - nodesBeingExamined(maxStops+1)
-    // dijkstra algorithm time complexity is O(V+E*logV)
-    // Given that in our trimmed database we have E=67K, V=3.5K, e=E/V=20, k=4
-    // Dijkstra gives us O(3.5K+67K*log3.5K) = ~240K operations  vs brute force that will give us 67K + 20^4 = 230K
-    // According, to my calculations above, we can say that both algorithms are of the same complexity given that amount of max stops stays low
-    // but to make it future-proof, not just tailored to the current requirements, we'd better use Dijkstra.
-    // At least it's not worse that brute-force and can outperform brute-force given more stops
-
-    //If we use Bellman-Ford , the complexity will be O(V*E) = 234*10^6, So I think we'd better come up with custom brute-force
     @Override
     public Optional<Route<Airport>> findRoute(String sourceAirport, String destAirport) {
         List<Airport> shortestPath = pathFinder.findShortestPath(airportFlights, airports.get(sourceAirport), airports.get(destAirport), maxStops);
@@ -48,10 +37,20 @@ public class RoutingServiceImpl implements RoutingService {
         return Optional.of(toRoute(shortestPath));
     }
 
-    private Map<Airport, List<Node<Airport>>> convert(List<Flight> flights, Map<String, Airport> airports) {
+    private static Map<String, Airport> group(List<Airport> airports) {
+        return airports.stream()
+                .filter(RoutingServiceImpl::isValid)
+                .collect(toMap(Airport::getIataCode, Function.identity(), (airport, airport2) -> airport));
+    }
+
+    private Map<Airport, List<Node<Airport>>> group(List<Flight> flights, Map<String, Airport> airports) {
         return flights.stream()
                 .collect(groupingBy(flight -> airports.get(flight.getSourceAirport()),
                         mapping(flight -> toAirportNode(airports, flight), toList())));
+    }
+
+    private static boolean isValid(Airport airport) {
+        return isNotBlank(airport.getIataCode());
     }
 
     private Node<Airport> toAirportNode(Map<String, Airport> airports, Flight flight) {
@@ -67,6 +66,5 @@ public class RoutingServiceImpl implements RoutingService {
         }
         return route;
     }
-
 
 }
