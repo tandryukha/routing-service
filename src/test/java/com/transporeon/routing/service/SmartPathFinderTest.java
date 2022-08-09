@@ -94,8 +94,21 @@ class SmartPathFinderTest {
         assertThat(shortestPath).isEqualTo(List.of("A", "D", "G", "H", "B"));
     }
 
-    //todo test case that close enough distance is taken into account
-    //todo ground transitions should be marked somehow (maybe return them together in array)
+    @DisplayName("Given two paths the shorter should be taken into account even if longer is between close nodes")
+    @Test
+    void shouldTakeDistanceBetweenCloseNodesIntoAccount() {
+        String source = "A";
+        String dest = "B";
+        int maxHops = 1;//1 hops = 0 intermediate stops
+        Map<String, List<PathFinder.Node<String>>> adjacencyList = Map.of(
+                "A", List.of(new PathFinder.Node<>("B", 1), new PathFinder.Node<>("C", 0.998)),
+                "C", List.of(new PathFinder.Node<>("D", 0.001)),
+                "D", List.of(new PathFinder.Node<>("E", 0.001)),
+                "E", List.of(new PathFinder.Node<>("B", 0.001))
+        );
+        List<String> shortestPath = pathFinder.findShortestPath(adjacencyList, source, dest, maxHops);
+        assertThat(shortestPath).isEqualTo(List.of("A", "B"));
+    }
 
     @Test
     void shouldNotFindShortestPath_GivenEmptyList() {
