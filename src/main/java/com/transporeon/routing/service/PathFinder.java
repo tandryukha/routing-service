@@ -1,7 +1,5 @@
 package com.transporeon.routing.service;
 
-import com.transporeon.routing.entity.Locatable;
-
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +14,7 @@ public interface PathFinder {
      * @return
      * @param <T>
      */
-    <T extends Locatable<T>> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxHops);
+    <T> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxHops);
 
     record Node<T>(T value, double distance) implements Comparable<Node<T>> {
         @Override

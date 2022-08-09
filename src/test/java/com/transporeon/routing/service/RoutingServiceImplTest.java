@@ -64,7 +64,7 @@ public class RoutingServiceImplTest {
 //        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("VKO")).add(toAirport("LED"));//1991 km
 //        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("SVO")).add(toAirport("LED"));//2003 km
 
-        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("VKO")).add(toAirport("LED"));//1991 km
+        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("KRR")).add(toAirport("LED"));//1,932.84 km
         Route<Airport> route = routingService.findRoute("AER", "LED").orElse(null);
         assertThat(route).isEqualTo(expectedRoute);
 
