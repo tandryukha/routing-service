@@ -24,12 +24,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @Slf4j
 public class RoutingServiceImplTest {
-
     private final Map<String, Airport> airports;
     private RoutingService routingService;
+    private RoutingServiceImpl routingService2;
     private final PathFinder pathFinder = new DPPathFinder();
     private final AirportRepositoryImpl airportRepository = new AirportRepositoryImpl(Path.of("src/main/resources/airports.csv"));
     private final FlightRepositoryImpl flightRepository = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed.csv"));
+    private final FlightRepositoryImpl flightRepository2 = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed-2.csv"));
 
     public RoutingServiceImplTest() {
         this.airports = group(airportRepository.findAll());//for more informative tests
@@ -38,6 +39,7 @@ public class RoutingServiceImplTest {
     @BeforeEach
     void setUp() {
         routingService = new RoutingServiceImpl(flightRepository, airportRepository, 3, pathFinder);
+        routingService2 = new RoutingServiceImpl(flightRepository2, airportRepository, 3, pathFinder);
     }
 
     @Test
@@ -50,26 +52,18 @@ public class RoutingServiceImplTest {
     @DisplayName("should return shortest compound route when direct flight AER->LED deleted from database")
     @Test
     void shouldReturnCompoundRoute1Stop() {
-//        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("TAS")).add(toAirport("LED"));//5788 km
-//        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("TZX").add(toAirport("IST")).add(toAirport("LED"));//3266 km
-//        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("OMS")).add(toAirport("LED"));//5307 km
-//        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("EVN")).add(toAirport("LED"));//2918 km
-//        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("IST")).add(toAirport("LED"));//3020 km
-//        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("SVX")).add(toAirport("LED"));//3891 km
-//        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("KRR")).add(toAirport("LED"));//1935 km
-//        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("KIV")).add(toAirport("LED"));//2383 km
-//        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("KZN")).add(toAirport("LED"));//2729 km
-//        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("MSQ")).add(toAirport("LED"));//2124 km
-//        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("DME")).add(toAirport("LED"));//2007 km
-//        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("VKO")).add(toAirport("LED"));//1991 km
-//        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("SVO")).add(toAirport("LED"));//2003 km
-
         Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("KRR")).add(toAirport("LED"));//1,932.84 km
         Route<Airport> route = routingService.findRoute("AER", "LED").orElse(null);
         assertThat(route).isEqualTo(expectedRoute);
-
     }
 
+    @DisplayName("should return shortest compound route when shorter flights removed from the database")
+    @Test
+    void shouldReturnCompoundRoute2Stops() {
+        Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("TZX")).add(toAirport("IST")).add(toAirport("LED"));//3,260.12 km
+        Route<Airport> route = routingService2.findRoute("AER", "LED").orElse(null);
+        assertThat(route).isEqualTo(expectedRoute);
+    }
 
     private Airport toAirport(String code) {
         return airports.get(code);
