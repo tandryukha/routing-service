@@ -27,7 +27,7 @@ public class RoutingServiceImplTest {
     private final Map<String, Airport> airports;
     private RoutingService routingService;
     private RoutingServiceImpl routingService2;
-    private final PathFinder pathFinder = new SmartPathFinder(100d);
+    private PathFinder pathFinder = new SmartPathFinder(100d);
     private final AirportRepositoryImpl airportRepository = new AirportRepositoryImpl(Path.of("src/main/resources/airports.csv"));
     private final FlightRepositoryImpl flightRepository = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed.csv"));
     private final FlightRepositoryImpl flightRepository2 = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed-2.csv"));
@@ -54,6 +54,18 @@ public class RoutingServiceImplTest {
     void shouldReturnCompoundRoute1Stop() {
         Route<Airport> expectedRoute = new Route<>(toAirport("AER")).add(toAirport("KRR")).add(toAirport("LED"));//1,932.84 km
         Route<Airport> route = routingService.findRoute("AER", "LED").orElse(null);
+        assertThat(route).isEqualTo(expectedRoute);
+    }
+
+    @DisplayName("should not consider close HEL airport as an additional stop")
+    @Test
+    void shouldNotConsiderCloseAirportsAsAnAdditionalStop() {
+        double maxDistanceNotToConsiderAsHop = 101;//distance from TLL to HEL
+        pathFinder = new SmartPathFinder(maxDistanceNotToConsiderAsHop);
+        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 1, pathFinder);
+        Route<Airport> expectedRoute = new Route<>(toAirport("TLL")).add(toAirport("HEL")).add(toAirport("TAY"));
+
+        Route<Airport> route = routingService.findRoute("TLL", "TAY").orElse(null);
         assertThat(route).isEqualTo(expectedRoute);
     }
 
