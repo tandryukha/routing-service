@@ -27,7 +27,7 @@ public class RoutingServiceImplTest {
     private final Map<String, Airport> airports;
     private RoutingService routingService;
     private RoutingServiceImpl routingService2;
-    private final PathFinder pathFinder = new SmartPathFinder(10d);
+    private final PathFinder pathFinder = new SmartPathFinder(100d);
     private final AirportRepositoryImpl airportRepository = new AirportRepositoryImpl(Path.of("src/main/resources/airports.csv"));
     private final FlightRepositoryImpl flightRepository = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed.csv"));
     private final FlightRepositoryImpl flightRepository2 = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed-2.csv"));

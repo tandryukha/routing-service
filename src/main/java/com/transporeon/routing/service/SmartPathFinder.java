@@ -3,10 +3,7 @@ package com.transporeon.routing.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
@@ -19,6 +16,7 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 @RequiredArgsConstructor
 public class SmartPathFinder implements PathFinder {
     private final double hopThreshold;
+    private final List LOOP_PREVENTING_MARKER = new ArrayList<>();
 
     @Override
     public <T> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxHops) {
@@ -33,8 +31,9 @@ public class SmartPathFinder implements PathFinder {
         if (source == dest) return toLinkedList(new Node<>(dest, 0d));//base case
 
         List<Node<T>> lookupValue = lookupTable.getOrDefault(source, emptyMap()).get(hops);
-        if (isNotEmpty(lookupValue)) return lookupValue;
+        if (isNotEmpty(lookupValue) || lookupValue == LOOP_PREVENTING_MARKER) return lookupValue;
 
+        memoize(lookupTable, source, hops, LOOP_PREVENTING_MARKER);//mark current combination of source+hops as visited to avoid loop
         List<Node<T>> shortestPath = findShortestPath(adjacencyList, source, dest, hops, lookupTable);
         memoize(lookupTable, source, hops, shortestPath);
         return shortestPath;
