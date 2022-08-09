@@ -13,7 +13,7 @@ import static java.util.Collections.emptyMap;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 /**
- * Path finder using Dynamic programming approach
+ * Path finder that uses Dynamic programming approach
  */
 @Slf4j
 @RequiredArgsConstructor
