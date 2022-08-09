@@ -1,11 +1,9 @@
 package com.transporeon.routing.service;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import com.transporeon.routing.entity.Locatable;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface PathFinder {
 
@@ -18,18 +16,12 @@ public interface PathFinder {
      * @return
      * @param <T>
      */
-    <T> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxHops);
+    <T extends Locatable<T>> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxHops);
 
-    @Data
-    @RequiredArgsConstructor
-    class Node<T> implements Comparable<Node<T>> {
-        private final T value;
-        private final double distance;
-        private int hopNumber;
-
+    record Node<T>(T value, double distance) implements Comparable<Node<T>> {
         @Override
         public int compareTo(Node<T> other) {
-            return Double.compare(distance, other.getDistance());
+            return Double.compare(distance, other.distance());
         }
     }
 
