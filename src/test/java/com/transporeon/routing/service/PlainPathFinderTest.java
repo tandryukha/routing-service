@@ -8,9 +8,9 @@ import java.util.Map;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DPPathFinderTest {
+class PlainPathFinderTest {
 
-    private final PathFinder pathFinder = new DPPathFinder();
+    private final PathFinder pathFinder = new PlainPathFinder();
 
     @Test
     void shouldFindShortestPathGivenOnlyDirectEdge() {

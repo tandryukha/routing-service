@@ -1,7 +1,6 @@
 package com.transporeon.routing.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.transporeon.routing.entity.Locatable;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,19 +17,13 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
  * Path finder using Dynamic programming approach
  */
 @Slf4j
-public class DPPathFinder implements PathFinder {
+public class PlainPathFinder implements PathFinder {
     @Override
     public <T> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxHops) {
         if (adjacencyList.isEmpty() || maxHops < 1) return emptyList();
         Map<T, Map<Integer, List<Node<T>>>> lookupTable = new HashMap<>();
         List<Node<T>> result = findShortestPathCached(adjacencyList, source, dest, maxHops, lookupTable);
-        print(lookupTable);
         return result.stream().map(Node::value).toList();
-    }
-
-    @SneakyThrows
-    private static <T> void print(Map<T, Map<Integer, List<Node<T>>>> lookupTable) {
-        log.info(new ObjectMapper().writeValueAsString(lookupTable));
     }
 
     private <T> List<Node<T>> findShortestPathCached(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int hops, Map<T, Map<Integer, List<Node<T>>>> lookupTable) {
