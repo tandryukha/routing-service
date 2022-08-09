@@ -19,14 +19,16 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Service
 public class RoutingServiceImpl implements RoutingService {
     private final int maxStops;
+    private double groundTransferThreshold;
     private final PathFinder pathFinder;
     private final Map<String, Airport> airports;
     Map<Airport, List<Node<Airport>>> airportFlights;
 
-    public RoutingServiceImpl(FlightRepository flightRepository, AirportRepository airportRepository, int maxStops, PathFinder pathFinder) {
+    public RoutingServiceImpl(FlightRepository flightRepository, AirportRepository airportRepository, int maxStops, double groundTransferThreshold, PathFinder pathFinder) {//todo create config class
         airports = group(airportRepository.findAll());
         airportFlights = group(flightRepository.findAll(), airports);
         this.maxStops = maxStops;
+        this.groundTransferThreshold = groundTransferThreshold;
         this.pathFinder = pathFinder;
     }
 
@@ -60,9 +62,16 @@ public class RoutingServiceImpl implements RoutingService {
     }
 
     private Route<Airport> toRoute(List<Airport> shortestPath) {
-        Route<Airport> route = new Route<>(shortestPath.get(0));
+        Airport prev = shortestPath.get(0);
+        Route<Airport> route = new Route<>(prev);
         for (int i = 1; i < shortestPath.size(); i++) {
-            route.add(shortestPath.get(i));
+            Airport curr = shortestPath.get(i);
+            double edgeLength = prev.distanceTo(curr);
+            if (edgeLength > groundTransferThreshold) {
+                route.add(curr);
+            } else {
+                route.addViaGround(curr);
+            }
         }
         return route;
     }

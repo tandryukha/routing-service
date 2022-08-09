@@ -1,28 +1,35 @@
 package com.transporeon.routing.model;
 
 import com.transporeon.routing.entity.Locatable;
-import lombok.EqualsAndHashCode;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 
+import static com.transporeon.routing.model.Route.PathNode.Type.AIR;
+import static com.transporeon.routing.model.Route.PathNode.Type.GROUND;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 
-@EqualsAndHashCode
 public class Route<M extends Locatable<M>> {
 
-    private final LinkedList<M> nodes = new LinkedList<>();
+    private final LinkedList<PathNode<M>> pathNodes = new LinkedList<>();
     private double distance = 0d;
 
     public Route(M startNode) {
-        nodes.add(startNode);
+        pathNodes.add(new PathNode<>(startNode, AIR));
     }
 
     public Route<M> add(M node) {
-        distance += node.distanceTo(nodes.getLast());
-        nodes.addLast(node);
+        return addPathNode(new PathNode<>(node, AIR));
+    }
+
+    public Route<M> addViaGround(M node) {
+        return addPathNode(new PathNode<>(node, GROUND));
+    }
+
+    private Route<M> addPathNode(PathNode<M> pathNode) {
+        distance += pathNode.node.distanceTo(pathNodes.getLast().node);
+        pathNodes.addLast(pathNode);
         return this;
     }
 
@@ -31,22 +38,30 @@ public class Route<M extends Locatable<M>> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Route<?> route = (Route<?>) o;
-        return nodes.equals(route.nodes);
+        return pathNodes.equals(route.pathNodes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nodes);
+        return Objects.hash(pathNodes);
     }
 
     @Override
     public String toString() {
-        String route = nodes.stream().map(Object::toString).collect(joining("->"));
+        String route = pathNodes.stream().map(this::nodeToString).collect(joining()).substring(2);
         return route + format(" (%,.2f km)", getDistance());
+    }
+
+    private String nodeToString(PathNode<M> pathNode) {
+        String delimiter = pathNode.type == PathNode.Type.GROUND ? "=>" : "->";
+        return delimiter + pathNode.node.toString();
     }
 
     public double getDistance() {
         return distance;
     }
 
+    record PathNode<M>(M node, Type type) {
+        enum Type {AIR, GROUND}
+    }
 }

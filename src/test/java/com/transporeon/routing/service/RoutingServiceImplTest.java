@@ -38,8 +38,8 @@ public class RoutingServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 3, pathFinder);
-        routingService2 = new RoutingServiceImpl(flightRepository2, airportRepository, 3, pathFinder);
+        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 3, 100d, pathFinder);
+        routingService2 = new RoutingServiceImpl(flightRepository2, airportRepository, 3, 100d, pathFinder);
     }
 
     @Test
@@ -62,8 +62,8 @@ public class RoutingServiceImplTest {
     void shouldNotConsiderCloseAirportsAsAnAdditionalStop() {
         double maxDistanceNotToConsiderAsHop = 101;//distance from TLL to HEL
         pathFinder = new SmartPathFinder(maxDistanceNotToConsiderAsHop);
-        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 1, pathFinder);
-        Route<Airport> expectedRoute = new Route<>(toAirport("TLL")).add(toAirport("HEL")).add(toAirport("TAY"));
+        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 1, 101d, pathFinder);
+        Route<Airport> expectedRoute = new Route<>(toAirport("TLL")).addViaGround(toAirport("HEL")).add(toAirport("TAY"));
 
         Route<Airport> route = routingService.findRoute("TLL", "TAY").orElse(null);
         assertThat(route).isEqualTo(expectedRoute);
