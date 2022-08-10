@@ -42,7 +42,7 @@ public class RoutingServiceImpl implements RoutingService {
      */
     private void merge(Map<Airport, List<Node<Airport>>> airportFlights, Map<Airport, List<Node<Airport>>> closeAirportEdges) {
         for (Map.Entry<Airport, List<Node<Airport>>> closeAirports : closeAirportEdges.entrySet()) {
-            airportFlights.get(closeAirports.getKey()).addAll(closeAirports.getValue());
+            airportFlights.getOrDefault(closeAirports.getKey(),new ArrayList<>()).addAll(closeAirports.getValue());
         }
     }
 

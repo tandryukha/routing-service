@@ -7,6 +7,9 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toMap;
 
+/**
+ * Uses brute-force approach
+ */
 public class GroundRoutingServiceImpl implements GroundRoutingService {
     @Override
     public Map<Airport, List<PathFinder.Node<Airport>>> getCloseAirports(double groundTransferThreshold, List<Airport> airports) {
