@@ -12,6 +12,8 @@ public class Airport implements Locatable<Airport> {
     private String ident;
     private String type;
     private String name;
+    private String country;
+    private String region;
 
     @Override
     public String toString() {
