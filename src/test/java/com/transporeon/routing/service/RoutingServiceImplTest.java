@@ -29,7 +29,7 @@ public class RoutingServiceImplTest {
     private RoutingServiceImpl routingService2;
     private PathFinder pathFinder = new SmartPathFinder(100d);
     private final AirportRepositoryImpl airportRepository = new AirportRepositoryImpl(Path.of("src/main/resources/airports.csv"));
-    private final FlightRepositoryImpl flightRepository = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed.csv"));
+    private FlightRepositoryImpl flightRepository = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed.csv"));
     private final FlightRepositoryImpl flightRepository2 = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed-2.csv"));
 
     public RoutingServiceImplTest() {
@@ -62,6 +62,19 @@ public class RoutingServiceImplTest {
     void shouldNotConsiderCloseAirportsAsAnAdditionalStop() {
         double maxDistanceNotToConsiderAsHop = 101;//distance from TLL to HEL
         pathFinder = new SmartPathFinder(maxDistanceNotToConsiderAsHop);
+        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 1, 101d, pathFinder);
+        Route<Airport> expectedRoute = new Route<>(toAirport("TLL")).addViaGround(toAirport("HEL")).add(toAirport("TAY"));
+
+        Route<Airport> route = routingService.findRoute("TLL", "TAY").orElse(null);
+        assertThat(route).isEqualTo(expectedRoute);
+    }
+
+    @DisplayName("should use ground move to HEL from TLL even if there is no flight")
+    @Test
+    void shouldConsiderCloseAirportsEvenIfThereIsNoFlightThere() {
+        double maxDistanceNotToConsiderAsHop = 101;//distance from TLL to HEL
+        pathFinder = new SmartPathFinder(maxDistanceNotToConsiderAsHop);
+        flightRepository = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed-3.csv"));
         routingService = new RoutingServiceImpl(flightRepository, airportRepository, 1, 101d, pathFinder);
         Route<Airport> expectedRoute = new Route<>(toAirport("TLL")).addViaGround(toAirport("HEL")).add(toAirport("TAY"));
 
