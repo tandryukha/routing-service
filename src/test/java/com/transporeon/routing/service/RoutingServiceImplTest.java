@@ -31,6 +31,7 @@ public class RoutingServiceImplTest {
     private final AirportRepositoryImpl airportRepository = new AirportRepositoryImpl(Path.of("src/main/resources/airports.csv"));
     private FlightRepositoryImpl flightRepository = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed.csv"));
     private final FlightRepositoryImpl flightRepository2 = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed-2.csv"));
+    private final GroundRoutingService groundRoutingService = new GroundRoutingServiceImpl();
 
     public RoutingServiceImplTest() {
         this.airports = group(airportRepository.findAll());//for more informative tests
@@ -38,8 +39,8 @@ public class RoutingServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 3, 100d, pathFinder);
-        routingService2 = new RoutingServiceImpl(flightRepository2, airportRepository, 3, 100d, pathFinder);
+        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 3, groundRoutingService, 100d, pathFinder);
+        routingService2 = new RoutingServiceImpl(flightRepository2, airportRepository, 3, groundRoutingService, 100d, pathFinder);
     }
 
     @Test
@@ -62,7 +63,7 @@ public class RoutingServiceImplTest {
     void shouldNotConsiderCloseAirportsAsAnAdditionalStop() {
         double maxDistanceNotToConsiderAsHop = 101;//distance from TLL to HEL
         pathFinder = new SmartPathFinder(maxDistanceNotToConsiderAsHop);
-        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 1, 101d, pathFinder);
+        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 1, groundRoutingService, 101d, pathFinder);
         Route<Airport> expectedRoute = new Route<>(toAirport("TLL")).addViaGround(toAirport("HEL")).add(toAirport("TAY"));
 
         Route<Airport> route = routingService.findRoute("TLL", "TAY").orElse(null);
@@ -75,7 +76,7 @@ public class RoutingServiceImplTest {
         double maxDistanceNotToConsiderAsHop = 101;//distance from TLL to HEL
         pathFinder = new SmartPathFinder(maxDistanceNotToConsiderAsHop);
         flightRepository = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed-3.csv"));
-        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 1, 101d, pathFinder);
+        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 1, groundRoutingService, 101d, pathFinder);
         Route<Airport> expectedRoute = new Route<>(toAirport("TLL")).addViaGround(toAirport("HEL")).add(toAirport("TAY"));
 
         Route<Airport> route = routingService.findRoute("TLL", "TAY").orElse(null);

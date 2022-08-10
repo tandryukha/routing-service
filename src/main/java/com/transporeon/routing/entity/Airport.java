@@ -12,18 +12,10 @@ public class Airport implements Locatable<Airport> {
     private String ident;
     private String type;
     private String name;
-    private String country;
-    private String region;
-
-    @Override
-    public String toString() {
-        return iataCode;
-    }
-
     private String elevationFt;
     private String continent;
-    private String isoCountry;
-    private String isoRegion;
+    private String country;
+    private String region;
     private String municipality;
     private String gpsCode;
     @EqualsAndHashCode.Include
@@ -80,5 +72,10 @@ public class Airport implements Locatable<Airport> {
         double earthRadius = 6371;
         double c = 2 * Math.asin(Math.sqrt(a));
         return earthRadius * c;
+    }
+
+    @Override
+    public String toString() {
+        return iataCode;
     }
 }

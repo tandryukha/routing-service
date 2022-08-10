@@ -18,15 +18,17 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class RoutingServiceImpl implements RoutingService {
     public static final Airport REFERENCE_AIRPORT = Airport.builder().coordinates("0,0").build();
     private final int maxStops;
+    private final GroundRoutingService groundRoutingService;
     private double groundTransferThreshold;
     private final PathFinder pathFinder;
     private final Map<String, Airport> airports;
     Map<Airport, List<Node<Airport>>> airportFlights;
 
-    public RoutingServiceImpl(FlightRepository flightRepository, AirportRepository airportRepository, int maxStops, double groundTransferThreshold, PathFinder pathFinder) {//todo create config class
+    public RoutingServiceImpl(FlightRepository flightRepository, AirportRepository airportRepository, int maxStops, GroundRoutingService groundRoutingService, double groundTransferThreshold, PathFinder pathFinder) {//todo create config class
         airports = group(airportRepository.findAll());
         airportFlights = group(flightRepository.findAll(), airports);
-        merge(airportFlights, getCloseAirportEdges(airports));
+        this.groundRoutingService = groundRoutingService;
+        merge(airportFlights, this.groundRoutingService.getCloseAirports(groundTransferThreshold, airports.values().stream().toList()));
         this.maxStops = maxStops;
         this.groundTransferThreshold = groundTransferThreshold;
         this.pathFinder = pathFinder;
@@ -42,38 +44,6 @@ public class RoutingServiceImpl implements RoutingService {
         for (Map.Entry<Airport, List<Node<Airport>>> closeAirports : closeAirportEdges.entrySet()) {
             airportFlights.get(closeAirports.getKey()).addAll(closeAirports.getValue());
         }
-    }
-
-    /**
-     * Sorting airports by distance to reference points, iterating to return airports groups
-     * Sorting by distance to reference point gives some false positives
-     * that are easy to eliminate by calculating distance and doesn't give false negatives
-     * @param airports airports
-     * @return close airport groups
-     */
-    private Map<Airport, List<Node<Airport>>> getCloseAirportEdges(Map<String, Airport> airports) {
-        Map<Airport, List<Node<Airport>>> closeAirports = new HashMap<>();
-        List<Airport> sortedAirports = airports.values().stream().sorted(this::distanceToReferencePointComparator).toList();
-
-        Airport airport = sortedAirports.get(0);
-        int closeAirportStartIndex = 1;
-        for (int i = closeAirportStartIndex; i < sortedAirports.size(); i++) {
-            Airport maybeCloseAirport = sortedAirports.get(i);
-            double distance = airport.distanceTo(maybeCloseAirport);//TLL=2622,HEL=2715
-            if (distance <= groundTransferThreshold) {
-                closeAirports.getOrDefault(airport, new ArrayList<>()).add(new Node<>(maybeCloseAirport, distance));//todo add bidirectional edge(2 directional edges)
-            } else if() {
-                airport = sortedAirports.get(closeAirportStartIndex);//todo it's incorrect to stop searching once you encounter one false-positive
-                i = ++closeAirportStartIndex;
-            }
-        }
-        return closeAirports;
-    }
-
-    private int distanceToReferencePointComparator(Airport airport1, Airport airport2) {
-        Double distance1 = airport1.distanceTo(REFERENCE_AIRPORT);
-        Double distance2 = airport2.distanceTo(REFERENCE_AIRPORT);
-        return distance1.compareTo(distance2);
     }
 
     @Override
