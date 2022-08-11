@@ -17,7 +17,7 @@ import java.util.stream.StreamSupport;
 import static java.util.stream.Collectors.toMap;
 
 /**
- * Uses brute-force approach
+ * Uses R*-tree data structure to index airports by geo coordinates and bounding rectangle to search close airports in the R-tree
  */
 public class RTreeRoutingService implements GroundRoutingService {
     private static final double EARTH_RADIUS = 6371.01;
@@ -25,19 +25,18 @@ public class RTreeRoutingService implements GroundRoutingService {
     @Override
     public Map<Airport, List<PathFinder.Node<Airport>>> getCloseAirports(double groundTransferThreshold, List<Airport> airports) {
         List<Entry<Airport, Point>> geometryList = airports.stream().map(airport -> {
-            String[] coords = airport.getCoordinates().split(",");
-            double longitude = Double.parseDouble(coords[0]);
-            double latitude = Double.parseDouble(coords[1]);
-            return Entries.entry(airport, Geometries.pointGeographic(longitude, latitude));
+            GeoLocation geoLocation = airport.getGeoLocation();
+            return Entries.entry(airport, Geometries.pointGeographic(geoLocation.getLongitudeInDegrees(), geoLocation.getLatitudeInDegrees()));
         }).collect(Collectors.toList());
-        RTree<Airport, Point> rtree = RTree.star().minChildren(10).maxChildren(100).create(geometryList);
-
-        Map<Airport, List<PathFinder.Node<Airport>>> rawCloseAirports = airports.stream()
-                .collect(toMap(airport -> airport, airport -> getCloseAirports(airport, rtree, groundTransferThreshold)));
-        Map<Airport, List<PathFinder.Node<Airport>>> nonEmptyCloseAirports = rawCloseAirports.entrySet().stream()
+        RTree<Airport, Point> rtree = createRTree(geometryList);
+        return airports.stream()
+                .collect(toMap(airport -> airport, airport -> getCloseAirports(airport, rtree, groundTransferThreshold))).entrySet().stream()
                 .filter(entry -> !entry.getValue().isEmpty())
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
-        return nonEmptyCloseAirports;
+    }
+
+    private static RTree<Airport, Point> createRTree(List<Entry<Airport, Point>> geometryList) {
+        return RTree.star().minChildren(10).maxChildren(100).create(geometryList);
     }
 
     private List<PathFinder.Node<Airport>> getCloseAirports(Airport airport, RTree<Airport, Point> rtree, double distance) {

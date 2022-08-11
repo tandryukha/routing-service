@@ -16,10 +16,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
 public class RoutingServiceImpl implements RoutingService {
-    public static final Airport REFERENCE_AIRPORT = Airport.builder().coordinates("0,0").build();
     private final int maxStops;
-    private final GroundRoutingService groundRoutingService;
-    private double groundTransferThreshold;
+    private final double groundTransferThreshold;
     private final PathFinder pathFinder;
     private final Map<String, Airport> airports;
     Map<Airport, List<Node<Airport>>> airportFlights;
@@ -27,8 +25,8 @@ public class RoutingServiceImpl implements RoutingService {
     public RoutingServiceImpl(FlightRepository flightRepository, AirportRepository airportRepository, int maxStops, GroundRoutingService groundRoutingService, double groundTransferThreshold, PathFinder pathFinder) {//todo create config class
         airports = group(airportRepository.findAll());
         airportFlights = group(flightRepository.findAll(), airports);
-        this.groundRoutingService = groundRoutingService;
-        merge(airportFlights, this.groundRoutingService.getCloseAirports(groundTransferThreshold, airports.values().stream().toList()));
+        Map<Airport, List<Node<Airport>>> closeAirports = groundRoutingService.getCloseAirports(groundTransferThreshold, airports.values().stream().toList());
+        merge(airportFlights, closeAirports);
         this.maxStops = maxStops;
         this.groundTransferThreshold = groundTransferThreshold;
         this.pathFinder = pathFinder;

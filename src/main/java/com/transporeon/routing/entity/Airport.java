@@ -60,12 +60,10 @@ public class Airport implements Locatable<Airport> {
      */
     @Override
     public double distanceTo(Airport other) {
-        String[] coords1 = this.coordinates.split(",");
-        String[] coords2 = other.coordinates.split(",");
-        double lon1 = Double.parseDouble(coords1[0]);
-        double lat1 = Double.parseDouble(coords1[1]);
-        double lon2 = Double.parseDouble(coords2[0]);
-        double lat2 = Double.parseDouble(coords2[1]);
+        double lon1 = getGeoLocation().getLongitudeInDegrees();
+        double lat1 = getGeoLocation().getLatitudeInDegrees();
+        double lon2 = other.getGeoLocation().getLongitudeInDegrees();
+        double lat2 = other.getGeoLocation().getLatitudeInDegrees();
 
         // distance between latitudes and longitudes
         double dLat = Math.toRadians(lat2 - lat1);
