@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -28,9 +27,8 @@ public class RoutingServiceImplTest {
     private final Map<String, Airport> airports;
     private RoutingService routingService;
     private RoutingServiceImpl routingService2;
-    private PathFinder pathFinder;
     private final AirportRepositoryImpl airportRepository = new AirportRepositoryImpl(getClass().getResourceAsStream("/airports.csv"));
-    private FlightRepositoryImpl flightRepository = new FlightRepositoryImpl(getClass().getResourceAsStream("/flights-trimmed.csv"));
+    private final FlightRepositoryImpl flightRepository = new FlightRepositoryImpl(getClass().getResourceAsStream("/flights-trimmed.csv"));
     private final FlightRepositoryImpl flightRepository2 = new FlightRepositoryImpl(getClass().getResourceAsStream("/flights-trimmed-2.csv"));
     private final FlightRepositoryImpl flightRepository3 = new FlightRepositoryImpl(getClass().getResourceAsStream("/flights-trimmed-3.csv"));
     private final GroundRoutingService groundRoutingService = new RTreeRoutingService();
@@ -43,7 +41,7 @@ public class RoutingServiceImplTest {
     @BeforeEach
     void setUp() {
         RoutingConfig config = new RoutingConfig(2, 100d);
-        pathFinder = new SmartPathFinder(config.getGroundTransferThreshold(), config.getMaxStops());
+        PathFinder pathFinder = new SmartPathFinder(config.getGroundTransferThreshold(), config.getMaxStops());
         routingService = new RoutingServiceImpl(flightRepository, airportRepository, groundRoutingService, pathFinder, config);
         routingService2 = new RoutingServiceImpl(flightRepository2, airportRepository, groundRoutingService, pathFinder, config);
 

@@ -7,12 +7,10 @@ public interface PathFinder {
 
     /**
      *
-     * @param adjacencyList
+     * @param adjacencyList input graph
      * @param source path starting point
      * @param dest path target point
-     * @param maxHops Max number of hops from source to dest. For example, 2 hops == 1 intermediate node is allowed between source and dest
-     * @return
-     * @param <T>
+     * @return shortest path
      */
     <T> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest);
 

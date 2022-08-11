@@ -96,7 +96,7 @@ public class GeoLocation {
      * <a href="http://JanMatuschek.de/LatitudeLongitudeBoundingCoordinates">
      * http://JanMatuschek.de/LatitudeLongitudeBoundingCoordinates</a>.</p>
      * @param distance the distance from the point represented by this
-     * GeoLocation instance. Must me measured in the same unit as the radius
+     * GeoLocation instance. Must be measured in the same unit as the radius
      * argument.
      * @param radius the radius of the sphere, e.g. the average radius for a
      * spherical approximation of the figure of the Earth is approximately

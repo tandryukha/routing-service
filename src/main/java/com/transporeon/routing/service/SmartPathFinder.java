@@ -9,7 +9,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.nonNull;
 
 /**
- * Path finder that uses Dynamic programming approach
+ * Path search algorithm that uses Dynamic programming approach
  */
 @Slf4j
 @RequiredArgsConstructor

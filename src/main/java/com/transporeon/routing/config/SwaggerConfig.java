@@ -31,7 +31,6 @@ public class SwaggerConfig {
      * <a href="https://stackoverflow.com/questions/70178343/springfox-3-0-0-is-not-working-with-spring-boot-2-6-0">compatibility issue</a>
      * between spring fox 3.0.0 and spring boot 2.6.0
      *
-     * @return
      */
     @Deprecated(forRemoval = true)
     @Bean

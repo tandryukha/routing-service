@@ -3,7 +3,6 @@ package com.transporeon.routing.repository;
 import com.transporeon.routing.entity.Airport;
 
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.Function;
 
