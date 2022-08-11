@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RTreeRoutingServiceTest {
 
-    private GroundRoutingService groundRoutingService = new RTreeRoutingService();
+    private final GroundRoutingService groundRoutingService = new RTreeRoutingService();
 
     @Test
     void getCloseAirports() {
