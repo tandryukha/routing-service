@@ -1,4 +1,6 @@
-package com.transporeon.routing.external;
+package com.transporeon.routing.entity;
+
+import lombok.Data;
 
 /**
  * <p>Represents a point on the surface of a sphere. (The Earth is almost
@@ -13,22 +15,22 @@ package com.transporeon.routing.external;
  *
  * @author Jan Philip Matuschek
  * @version 22 September 2010
+ *
+ * Modified by Andrey Taran on Aug 11 (removed getters, used lombok)
  */
+@Data
 public class GeoLocation {
 
-    private double radLat;  // latitude in radians
-    private double radLon;  // longitude in radians
+    private double latitudeInRadians;  // latitude in radians
+    private double longitudeInRadians;  // longitude in radians
 
-    private double degLat;  // latitude in degrees
-    private double degLon;  // longitude in degrees
+    private double latitudeInDegrees;  // latitude in degrees
+    private double longitudeInDegrees;  // longitude in degrees
 
     private static final double MIN_LAT = Math.toRadians(-90d);  // -PI/2
     private static final double MAX_LAT = Math.toRadians(90d);   //  PI/2
     private static final double MIN_LON = Math.toRadians(-180d); // -PI
     private static final double MAX_LON = Math.toRadians(180d);  //  PI
-
-    private GeoLocation () {
-    }
 
     /**
      * @param latitude the latitude, in degrees.
@@ -36,10 +38,10 @@ public class GeoLocation {
      */
     public static GeoLocation fromDegrees(double latitude, double longitude) {
         GeoLocation result = new GeoLocation();
-        result.radLat = Math.toRadians(latitude);
-        result.radLon = Math.toRadians(longitude);
-        result.degLat = latitude;
-        result.degLon = longitude;
+        result.latitudeInRadians = Math.toRadians(latitude);
+        result.longitudeInRadians = Math.toRadians(longitude);
+        result.latitudeInDegrees = latitude;
+        result.longitudeInDegrees = longitude;
         result.checkBounds();
         return result;
     }
@@ -50,52 +52,24 @@ public class GeoLocation {
      */
     public static GeoLocation fromRadians(double latitude, double longitude) {
         GeoLocation result = new GeoLocation();
-        result.radLat = latitude;
-        result.radLon = longitude;
-        result.degLat = Math.toDegrees(latitude);
-        result.degLon = Math.toDegrees(longitude);
+        result.latitudeInRadians = latitude;
+        result.longitudeInRadians = longitude;
+        result.latitudeInDegrees = Math.toDegrees(latitude);
+        result.longitudeInDegrees = Math.toDegrees(longitude);
         result.checkBounds();
         return result;
     }
 
     private void checkBounds() {
-        if (radLat < MIN_LAT || radLat > MAX_LAT ||
-                radLon < MIN_LON || radLon > MAX_LON)
+        if (latitudeInRadians < MIN_LAT || latitudeInRadians > MAX_LAT ||
+                longitudeInRadians < MIN_LON || longitudeInRadians > MAX_LON)
             throw new IllegalArgumentException();
-    }
-
-    /**
-     * @return the latitude, in degrees.
-     */
-    public double getLatitudeInDegrees() {
-        return degLat;
-    }
-
-    /**
-     * @return the longitude, in degrees.
-     */
-    public double getLongitudeInDegrees() {
-        return degLon;
-    }
-
-    /**
-     * @return the latitude, in radians.
-     */
-    public double getLatitudeInRadians() {
-        return radLat;
-    }
-
-    /**
-     * @return the longitude, in radians.
-     */
-    public double getLongitudeInRadians() {
-        return radLon;
     }
 
     @Override
     public String toString() {
-        return "(" + degLat + "\u00B0, " + degLon + "\u00B0) = (" +
-                radLat + " rad, " + radLon + " rad)";
+        return "(" + latitudeInDegrees + "\u00B0, " + longitudeInDegrees + "\u00B0) = (" +
+                latitudeInRadians + " rad, " + longitudeInRadians + " rad)";
     }
 
     /**
@@ -108,9 +82,9 @@ public class GeoLocation {
      * argument.
      */
     public double distanceTo(GeoLocation location, double radius) {
-        return Math.acos(Math.sin(radLat) * Math.sin(location.radLat) +
-                Math.cos(radLat) * Math.cos(location.radLat) *
-                        Math.cos(radLon - location.radLon)) * radius;
+        return Math.acos(Math.sin(latitudeInRadians) * Math.sin(location.latitudeInRadians) +
+                Math.cos(latitudeInRadians) * Math.cos(location.latitudeInRadians) *
+                        Math.cos(longitudeInRadians - location.longitudeInRadians)) * radius;
     }
 
     /**
@@ -153,16 +127,16 @@ public class GeoLocation {
         // angular distance in radians on a great circle
         double radDist = distance / radius;
 
-        double minLat = radLat - radDist;
-        double maxLat = radLat + radDist;
+        double minLat = latitudeInRadians - radDist;
+        double maxLat = latitudeInRadians + radDist;
 
         double minLon, maxLon;
         if (minLat > MIN_LAT && maxLat < MAX_LAT) {
             double deltaLon = Math.asin(Math.sin(radDist) /
-                    Math.cos(radLat));
-            minLon = radLon - deltaLon;
+                    Math.cos(latitudeInRadians));
+            minLon = longitudeInRadians - deltaLon;
             if (minLon < MIN_LON) minLon += 2d * Math.PI;
-            maxLon = radLon + deltaLon;
+            maxLon = longitudeInRadians + deltaLon;
             if (maxLon > MAX_LON) maxLon -= 2d * Math.PI;
         } else {
             // a pole is within the distance

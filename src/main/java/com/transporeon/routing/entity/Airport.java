@@ -25,6 +25,18 @@ public class Airport implements Locatable<Airport> {
      */
     private String coordinates;
 
+
+    private GeoLocation geoLocation;
+
+    public GeoLocation getGeoLocation() {
+        if (geoLocation != null) return geoLocation;
+        String[] coords = coordinates.split(",");
+        double longitude = Double.parseDouble(coords[0]);
+        double latitude = Double.parseDouble(coords[1]);
+        this.geoLocation = GeoLocation.fromDegrees(latitude, longitude);
+        return geoLocation;
+    }
+
     /**
      * This uses the ‘haversine’ formula to calculate the great-circle distance between two points – that is,
      * the shortest distance over the earth’s surface – giving an ‘as-the-crow-flies’ distance
