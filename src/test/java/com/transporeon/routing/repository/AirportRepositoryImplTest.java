@@ -14,7 +14,7 @@ class AirportRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        airportRepository = new AirportRepositoryImpl(Path.of("src/main/resources/airports.csv"));
+        airportRepository = new AirportRepositoryImpl(getClass().getResourceAsStream("/airports.csv"));
     }
 
     @Test
@@ -30,6 +30,6 @@ class AirportRepositoryImplTest {
 
     @Test
     void shouldFailDuringCreationIfFileIsNotFound() {
-        assertThrows(IllegalStateException.class, () -> new AirportRepositoryImpl(Path.of("non/existent/path/airports.csv")));
+        assertThrows(IllegalStateException.class, () -> new AirportRepositoryImpl(getClass().getResourceAsStream("badFile.csv")));
     }
 }

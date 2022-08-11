@@ -14,7 +14,7 @@ class FlightRepositoryImplTest {
 
     @BeforeEach
     void setUp() {
-        flightRepository = new FlightRepositoryImpl(Path.of("src/main/resources/flights.csv"));
+        flightRepository = new FlightRepositoryImpl(getClass().getResourceAsStream("/flights.csv"));
     }
 
     @Test
@@ -30,6 +30,6 @@ class FlightRepositoryImplTest {
 
     @Test
     void shouldFailDuringCreationIfFileIsNotFound() {
-        assertThrows(IllegalStateException.class, () -> new FlightRepositoryImpl(Path.of("non/existent/path/flights.csv")));
+        assertThrows(IllegalStateException.class, () -> new FlightRepositoryImpl(getClass().getResourceAsStream("non/existent/path/flights.csv")));
     }
 }

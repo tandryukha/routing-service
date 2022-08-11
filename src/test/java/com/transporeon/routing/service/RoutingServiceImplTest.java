@@ -29,10 +29,10 @@ public class RoutingServiceImplTest {
     private RoutingService routingService;
     private RoutingServiceImpl routingService2;
     private PathFinder pathFinder;
-    private final AirportRepositoryImpl airportRepository = new AirportRepositoryImpl(Path.of("src/main/resources/airports.csv"));
-    private FlightRepositoryImpl flightRepository = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed.csv"));
-    private final FlightRepositoryImpl flightRepository2 = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed-2.csv"));
-    private final FlightRepositoryImpl flightRepository3 = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed-3.csv"));
+    private final AirportRepositoryImpl airportRepository = new AirportRepositoryImpl(getClass().getResourceAsStream("/airports.csv"));
+    private FlightRepositoryImpl flightRepository = new FlightRepositoryImpl(getClass().getResourceAsStream("/flights-trimmed.csv"));
+    private final FlightRepositoryImpl flightRepository2 = new FlightRepositoryImpl(getClass().getResourceAsStream("/flights-trimmed-2.csv"));
+    private final FlightRepositoryImpl flightRepository3 = new FlightRepositoryImpl(getClass().getResourceAsStream("/flights-trimmed-3.csv"));
     private final GroundRoutingService groundRoutingService = new RTreeRoutingService();
     private RoutingService routingService3;
 

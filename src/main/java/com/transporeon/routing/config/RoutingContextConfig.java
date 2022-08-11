@@ -9,6 +9,7 @@ import com.transporeon.routing.service.SmartPathFinder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 
 @Configuration
@@ -21,12 +22,16 @@ public class RoutingContextConfig {
 
     @Bean
     public AirportRepository airportRepository() {
-        return new AirportRepositoryImpl(Path.of("src/main/resources/airports.csv"));
+        return new AirportRepositoryImpl(getInputStream("/airports.csv"));
     }
 
     @Bean
     public FlightRepository flightRepository() {
-        return new FlightRepositoryImpl(Path.of("src/main/resources/flights.csv"));
+        return new FlightRepositoryImpl(getInputStream("/flights.csv"));
+    }
+
+    private InputStream getInputStream(String path) {
+        return getClass().getResourceAsStream(path);
     }
 
 }

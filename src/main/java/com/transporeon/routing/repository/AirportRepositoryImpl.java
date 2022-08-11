@@ -2,6 +2,7 @@ package com.transporeon.routing.repository;
 
 import com.transporeon.routing.entity.Airport;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.Function;
@@ -13,8 +14,8 @@ public class AirportRepositoryImpl extends CSVTemplateRepository<Airport> implem
 
     private final Map<String, Airport> groupedAirports;
 
-    public AirportRepositoryImpl(Path pathToCsvFile) {
-        super(pathToCsvFile, Airport.class);
+    public AirportRepositoryImpl(InputStream inputStream) {
+        super(inputStream, Airport.class);
         groupedAirports = findAll().stream()
                 .filter(this::isValid)
                 .collect(toMap(Airport::getIataCode, Function.identity(), (airport, airport2) -> airport));
