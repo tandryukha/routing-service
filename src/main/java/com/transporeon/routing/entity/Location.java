@@ -1,5 +1,5 @@
 package com.transporeon.routing.entity;
 
-public interface Locatable<T> {
+public interface Location<T> {
     double distanceTo(T other);
 }

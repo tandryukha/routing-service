@@ -1,6 +1,6 @@
 package com.transporeon.routing.model;
 
-import com.transporeon.routing.entity.Locatable;
+import com.transporeon.routing.entity.Location;
 
 import java.util.LinkedList;
 import java.util.Objects;
@@ -10,7 +10,7 @@ import static com.transporeon.routing.model.Route.PathNode.Type.GROUND;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 
-public class Route<M extends Locatable<M>> {
+public class Route<M extends Location<M>> {
 
     private final LinkedList<PathNode<M>> pathNodes = new LinkedList<>();
     private double distance = 0d;

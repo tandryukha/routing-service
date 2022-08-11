@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Airport implements Locatable<Airport> {
+public class Airport implements Location<Airport> {
     private String ident;
     private String type;
     private String name;

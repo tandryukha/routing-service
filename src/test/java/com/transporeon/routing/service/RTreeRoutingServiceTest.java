@@ -13,7 +13,7 @@ class RTreeRoutingServiceTest {
     private final GroundRoutingService groundRoutingService = new RTreeRoutingService();
 
     @Test
-    void getCloseAirports() {
+    void shouldReturnCloseAirports() {
         Airport tllAirport = Airport.builder().coordinates("24.832799911499997, 59.41329956049999").iataCode("TLL").build();
         Airport helAirport = Airport.builder().coordinates("24.963300704956, 60.317199707031").iataCode("HEL").build();
         Airport hrkAirport = Airport.builder().coordinates("36.290000915527344, 49.924800872802734").iataCode("HRK").build();
