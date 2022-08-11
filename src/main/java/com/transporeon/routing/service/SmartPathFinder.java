@@ -7,6 +7,7 @@ import java.util.*;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 /**
@@ -16,7 +17,6 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 @RequiredArgsConstructor
 public class SmartPathFinder implements PathFinder {
     private final double hopThreshold;
-    private final List LOOP_PREVENTING_MARKER = new ArrayList<>();
 
     @Override
     public <T> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxHops) {
@@ -30,10 +30,10 @@ public class SmartPathFinder implements PathFinder {
         if (hops < 0) return emptyList();//base case
         if (source == dest) return toLinkedList(new Node<>(dest, 0d));//base case
 
-        List<Node<T>> lookupValue = lookupTable.getOrDefault(source, emptyMap()).get(hops);
-        if (isNotEmpty(lookupValue) || lookupValue == LOOP_PREVENTING_MARKER) return lookupValue;
+        List<Node<T>> lookupValue = Optional.ofNullable(lookupTable.get(source)).map(map -> map.get(hops)).orElse(null);
+        if (nonNull(lookupValue)) return lookupValue;
 
-        memoize(lookupTable, source, hops, LOOP_PREVENTING_MARKER);//mark current combination of source+hops as visited to avoid loop
+        memoize(lookupTable, source, hops, emptyList());//mark current combination of source+hops as visited to avoid loop
         List<Node<T>> shortestPath = findShortestPath(adjacencyList, source, dest, hops, lookupTable);
         memoize(lookupTable, source, hops, shortestPath);
         return shortestPath;
