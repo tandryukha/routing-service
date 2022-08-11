@@ -24,5 +24,10 @@ The following guides illustrate how to use some features concretely:
 * [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
 
 
-# Open API
-http://localhost:8080/swagger-ui/#/
+# API
+GET http://localhost:8080/?airport1=TLL&airport2=TAY
+
+Response: TLL=>HEL->TAY (344.77 km)
+
+Once you run a server,
+please refer to [Open API documentation](http://localhost:8080/swagger-ui/#/) for more details
