@@ -31,7 +31,7 @@ public class RoutingServiceImplTest {
     private final AirportRepositoryImpl airportRepository = new AirportRepositoryImpl(Path.of("src/main/resources/airports.csv"));
     private FlightRepositoryImpl flightRepository = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed.csv"));
     private final FlightRepositoryImpl flightRepository2 = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed-2.csv"));
-    private final GroundRoutingService groundRoutingService = new GroundRoutingServiceImpl();
+    private final GroundRoutingService groundRoutingService = new RTreeRoutingService();
 
     public RoutingServiceImplTest() {
         this.airports = group(airportRepository.findAll());//for more informative tests

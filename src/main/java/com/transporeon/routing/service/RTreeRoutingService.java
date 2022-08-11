@@ -8,9 +8,11 @@ import com.github.davidmoten.rtree.geometry.Point;
 import com.github.davidmoten.rtree.geometry.Rectangle;
 import com.transporeon.routing.entity.Airport;
 import com.transporeon.routing.external.GeoLocation;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toMap;
@@ -18,8 +20,10 @@ import static java.util.stream.Collectors.toMap;
 /**
  * Uses brute-force approach
  */
+@Slf4j
 public class RTreeRoutingService implements GroundRoutingService {
     private static final double EARTH_RADIUS = 6371.01;
+    private final ThreadLocal<Integer> counter = ThreadLocal.withInitial(() -> 0);
 
     @Override
     public Map<Airport, List<PathFinder.Node<Airport>>> getCloseAirports(double groundTransferThreshold, List<Airport> airports) {
@@ -28,8 +32,8 @@ public class RTreeRoutingService implements GroundRoutingService {
             double longitude = Double.parseDouble(coords[0]);
             double latitude = Double.parseDouble(coords[1]);
             return Entries.entry(airport, Geometries.pointGeographic(longitude, latitude));
-        }).toList();
-        RTree<Airport, Point> rtree = RTree.minChildren(2).maxChildren(10).create(geometryList);
+        }).collect(Collectors.toList());
+        RTree<Airport, Point> rtree = RTree.star().minChildren(10).maxChildren(100).create(geometryList);
 
         Map<Airport, List<PathFinder.Node<Airport>>> rawCloseAirports = airports.stream()
                 .collect(toMap(airport -> airport, airport -> getCloseAirports(airport, rtree, groundTransferThreshold)));
@@ -45,7 +49,10 @@ public class RTreeRoutingService implements GroundRoutingService {
         double latitude = Double.parseDouble(coords[1]);
         GeoLocation airportGeo = GeoLocation.fromDegrees(latitude, longitude);
         Rectangle closeAirportsRectangle = getBoundingRectangle(airportGeo, distance);
-        Iterable<Entry<Airport, Point>> entries = rtree.search(closeAirportsRectangle).toBlocking().toIterable();
+        log.info("[{}] Searching for airports close to {}", counter.get(), airport);
+        counter.set(counter.get() + 1);
+        Iterable<Entry<Airport, Point>> entries = rtree.search(closeAirportsRectangle).toBlocking().toIterable();//todo add logging with iterations counter to understand when it fails
+        log.info("Found {} airports close to {}", StreamSupport.stream(entries.spliterator(), false).count(), airport);
         return StreamSupport.stream(entries.spliterator(), false)
                 .filter(e -> e.value() != airport)
                 .map(e -> new PathFinder.Node<>(e.value(), airport.distanceTo(e.value())))
