@@ -1,3 +1,8 @@
 routing:
   max-stops: 4
   ground-transfer-threshold: 100
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
