@@ -17,6 +17,8 @@ REST API that takes as input two IATA airport codes and provides as output a rou
 GET http://localhost:8080/?airport1=TLL&airport2=TAY
 Response: TLL=>HEL->TAY (344.77 km)
 
+# Customization
+Maximum number of stops and max ground transfer distance can be configured in application.yaml 
 # Implementation details
 
 # Further improvements

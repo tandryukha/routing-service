@@ -42,12 +42,12 @@ public class RoutingServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        RoutingConfig config = new RoutingConfig(3, 100d);
+        RoutingConfig config = new RoutingConfig(2, 100d);
         pathFinder = new SmartPathFinder(config.getGroundTransferThreshold(), config.getMaxStops());
         routingService = new RoutingServiceImpl(flightRepository, airportRepository, groundRoutingService, pathFinder, config);
         routingService2 = new RoutingServiceImpl(flightRepository2, airportRepository, groundRoutingService, pathFinder, config);
 
-        RoutingConfig config2 = new RoutingConfig(1, 101d);//distance from TLL to HEL
+        RoutingConfig config2 = new RoutingConfig(0, 101d);//distance from TLL to HEL
         PathFinder pathFinder2 = new SmartPathFinder(config2.getGroundTransferThreshold(), config2.getMaxStops());
         routingService3 = new RoutingServiceImpl(flightRepository3, airportRepository, groundRoutingService, pathFinder2, config2);
     }

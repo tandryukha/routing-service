@@ -6,9 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.*;
 
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 /**
  * Path finder that uses Dynamic programming approach
@@ -17,13 +15,13 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 @RequiredArgsConstructor
 public class SmartPathFinder implements PathFinder {
     private final double hopThreshold;
-    private final int maxHops;
+    private final int maxStops;
 
     @Override
     public <T> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest) {
-        if (adjacencyList.isEmpty() || maxHops < 1) return emptyList();
+        if (adjacencyList.isEmpty() || maxStops < 0) return emptyList();
         Map<T, Map<Integer, List<Node<T>>>> lookupTable = new HashMap<>();
-        List<Node<T>> result = findShortestPathCached(adjacencyList, source, dest, maxHops, lookupTable);
+        List<Node<T>> result = findShortestPathCached(adjacencyList, source, dest, maxStops+1, lookupTable);
         return result.stream().map(Node::value).toList();
     }
 

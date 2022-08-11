@@ -1,5 +1,5 @@
 routing:
-  max-stops: 4
+  max-stops: 3
   ground-transfer-threshold: 100
 
 spring:

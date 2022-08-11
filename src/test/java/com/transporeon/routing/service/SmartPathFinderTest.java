@@ -15,7 +15,7 @@ class SmartPathFinderTest {
     void shouldFindShortestPathGivenOnlyDirectEdge() {
         int source = 0;
         int dest = 2;
-        int maxHops = 10;
+        int maxHops = 9;
         PathFinder pathFinder = new SmartPathFinder(0.001d, maxHops);
 
         Map<Integer, List<PathFinder.Node<Integer>>> adjacencyList = Map.of(
@@ -30,7 +30,7 @@ class SmartPathFinderTest {
     void shouldReturnPathThatDoesntExceedHopLimit() {
         int source = 0;
         int dest = 4;
-        int maxHops = 2;//2 hops = 1 intermediate stop
+        int maxHops = 1;
         PathFinder pathFinder = new SmartPathFinder(0.001d, maxHops);
 
         Map<Integer, List<PathFinder.Node<Integer>>> adjacencyList = Map.of(
@@ -48,7 +48,7 @@ class SmartPathFinderTest {
     void shouldReturnPathThatDoesntExceedHopLimit2() {
         String source = "A";
         String dest = "B";
-        int maxHops = 4;//4 hops = 3 intermediate stops
+        int maxHops = 3;
         PathFinder pathFinder = new SmartPathFinder(0.001d, maxHops);
 
         Map<String, List<PathFinder.Node<String>>> adjacencyList = Map.of(
@@ -67,7 +67,7 @@ class SmartPathFinderTest {
     void shouldNotReturnPathIfAllPathsExceedLimit() {
         String source = "A";
         String dest = "B";
-        int maxHops = 3;//3 hops = 2 intermediate stops
+        int maxHops = 2;
         PathFinder pathFinder = new SmartPathFinder(0.001d, maxHops);
 
         Map<String, List<PathFinder.Node<String>>> adjacencyList = Map.of(
@@ -87,7 +87,7 @@ class SmartPathFinderTest {
     void shouldNotCountHopBetweenCloseNodes() {
         String source = "A";
         String dest = "B";
-        int maxHops = 3;//3 hops = 2 intermediate stops
+        int maxHops = 2;
         PathFinder pathFinder = new SmartPathFinder(0.001d, maxHops);
 
         Map<String, List<PathFinder.Node<String>>> adjacencyList = Map.of(
@@ -107,7 +107,7 @@ class SmartPathFinderTest {
     void shouldTakeDistanceBetweenCloseNodesIntoAccount() {
         String source = "A";
         String dest = "B";
-        int maxHops = 1;//1 hops = 0 intermediate stops
+        int maxHops = 0;
         PathFinder pathFinder = new SmartPathFinder(0.001d, maxHops);
 
         Map<String, List<PathFinder.Node<String>>> adjacencyList = Map.of(
