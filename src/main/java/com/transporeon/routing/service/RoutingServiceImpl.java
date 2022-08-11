@@ -1,14 +1,18 @@
 package com.transporeon.routing.service;
 
-import com.transporeon.routing.model.Route;
+import com.transporeon.routing.config.RoutingConfig;
 import com.transporeon.routing.entity.Airport;
 import com.transporeon.routing.entity.Flight;
+import com.transporeon.routing.model.Route;
 import com.transporeon.routing.repository.AirportRepository;
 import com.transporeon.routing.repository.FlightRepository;
 import com.transporeon.routing.service.PathFinder.Node;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
@@ -16,20 +20,33 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
 public class RoutingServiceImpl implements RoutingService {
-    private final int maxStops;
-    private final double groundTransferThreshold;
     private final PathFinder pathFinder;
     private final Map<String, Airport> airports;
-    Map<Airport, List<Node<Airport>>> airportFlights;
+    private final Map<Airport, List<Node<Airport>>> airportFlights;
+    private final RoutingConfig routingConfig;
 
-    public RoutingServiceImpl(FlightRepository flightRepository, AirportRepository airportRepository, int maxStops, GroundRoutingService groundRoutingService, double groundTransferThreshold, PathFinder pathFinder) {//todo create config class
+    public RoutingServiceImpl(FlightRepository flightRepository,
+                              AirportRepository airportRepository,
+                              GroundRoutingService groundRoutingService,
+                              PathFinder pathFinder,
+                              RoutingConfig routingConfig) {
+        this.routingConfig = routingConfig;
+        this.pathFinder = pathFinder;
         airports = group(airportRepository.findAll());
         airportFlights = group(flightRepository.findAll(), airports);
-        Map<Airport, List<Node<Airport>>> closeAirports = groundRoutingService.getCloseAirports(groundTransferThreshold, airports.values().stream().toList());
-        merge(airportFlights, closeAirports);
-        this.maxStops = maxStops;
-        this.groundTransferThreshold = groundTransferThreshold;
-        this.pathFinder = pathFinder;
+        merge(airportFlights, getCloseAirports(groundRoutingService, routingConfig));
+    }
+
+    @Override
+    public Optional<Route<Airport>> findRoute(String sourceAirport, String destAirport) {
+        List<Airport> shortestPath = pathFinder.findShortestPath(airportFlights, airports.get(sourceAirport), airports.get(destAirport));
+        if (shortestPath.isEmpty()) return Optional.empty();
+        return Optional.of(toRoute(shortestPath));
+    }
+
+    private Map<Airport, List<Node<Airport>>> getCloseAirports(GroundRoutingService groundRoutingService, RoutingConfig routingConfig) {
+        List<Airport> airportList = airports.values().stream().toList();
+        return groundRoutingService.getCloseAirports(routingConfig.getGroundTransferThreshold(), airportList);
     }
 
     /**
@@ -40,15 +57,8 @@ public class RoutingServiceImpl implements RoutingService {
      */
     private void merge(Map<Airport, List<Node<Airport>>> airportFlights, Map<Airport, List<Node<Airport>>> closeAirportEdges) {
         for (Map.Entry<Airport, List<Node<Airport>>> closeAirports : closeAirportEdges.entrySet()) {
-            airportFlights.getOrDefault(closeAirports.getKey(),new ArrayList<>()).addAll(closeAirports.getValue());
+            airportFlights.getOrDefault(closeAirports.getKey(), new ArrayList<>()).addAll(closeAirports.getValue());
         }
-    }
-
-    @Override
-    public Optional<Route<Airport>> findRoute(String sourceAirport, String destAirport) {
-        List<Airport> shortestPath = pathFinder.findShortestPath(airportFlights, airports.get(sourceAirport), airports.get(destAirport), maxStops);
-        if (shortestPath.isEmpty()) return Optional.empty();
-        return Optional.of(toRoute(shortestPath));
     }
 
     private static Map<String, Airport> group(List<Airport> airports) {
@@ -79,7 +89,7 @@ public class RoutingServiceImpl implements RoutingService {
         for (int i = 1; i < shortestPath.size(); i++) {
             Airport curr = shortestPath.get(i);
             double edgeLength = prev.distanceTo(curr);
-            if (edgeLength > groundTransferThreshold) {
+            if (edgeLength > routingConfig.getGroundTransferThreshold()) {
                 route.add(curr);
             } else {
                 route.addViaGround(curr);

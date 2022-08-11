@@ -1,5 +1,6 @@
 package com.transporeon.routing.service;
 
+import com.transporeon.routing.config.RoutingConfig;
 import com.transporeon.routing.entity.Airport;
 import com.transporeon.routing.model.Route;
 import com.transporeon.routing.repository.AirportRepositoryImpl;
@@ -27,11 +28,13 @@ public class RoutingServiceImplTest {
     private final Map<String, Airport> airports;
     private RoutingService routingService;
     private RoutingServiceImpl routingService2;
-    private PathFinder pathFinder = new SmartPathFinder(100d);
+    private PathFinder pathFinder;
     private final AirportRepositoryImpl airportRepository = new AirportRepositoryImpl(Path.of("src/main/resources/airports.csv"));
     private FlightRepositoryImpl flightRepository = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed.csv"));
     private final FlightRepositoryImpl flightRepository2 = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed-2.csv"));
+    private final FlightRepositoryImpl flightRepository3 = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed-3.csv"));
     private final GroundRoutingService groundRoutingService = new RTreeRoutingService();
+    private RoutingService routingService3;
 
     public RoutingServiceImplTest() {
         this.airports = group(airportRepository.findAll());//for more informative tests
@@ -39,8 +42,14 @@ public class RoutingServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 3, groundRoutingService, 100d, pathFinder);
-        routingService2 = new RoutingServiceImpl(flightRepository2, airportRepository, 3, groundRoutingService, 100d, pathFinder);
+        RoutingConfig config = new RoutingConfig(3, 100d);
+        pathFinder = new SmartPathFinder(config.getGroundTransferThreshold(), config.getMaxStops());
+        routingService = new RoutingServiceImpl(flightRepository, airportRepository, groundRoutingService, pathFinder, config);
+        routingService2 = new RoutingServiceImpl(flightRepository2, airportRepository, groundRoutingService, pathFinder, config);
+
+        RoutingConfig config2 = new RoutingConfig(1, 101d);//distance from TLL to HEL
+        PathFinder pathFinder2 = new SmartPathFinder(config2.getGroundTransferThreshold(), config2.getMaxStops());
+        routingService3 = new RoutingServiceImpl(flightRepository3, airportRepository, groundRoutingService, pathFinder2, config2);
     }
 
     @Test
@@ -61,25 +70,16 @@ public class RoutingServiceImplTest {
     @DisplayName("should not consider close HEL airport as an additional stop")
     @Test
     void shouldNotConsiderCloseAirportsAsAnAdditionalStop() {
-        double maxDistanceNotToConsiderAsHop = 101;//distance from TLL to HEL
-        pathFinder = new SmartPathFinder(maxDistanceNotToConsiderAsHop);
-        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 1, groundRoutingService, 101d, pathFinder);
         Route<Airport> expectedRoute = new Route<>(toAirport("TLL")).addViaGround(toAirport("HEL")).add(toAirport("TAY"));
-
-        Route<Airport> route = routingService.findRoute("TLL", "TAY").orElse(null);
+        Route<Airport> route = routingService3.findRoute("TLL", "TAY").orElse(null);
         assertThat(route).isEqualTo(expectedRoute);
     }
 
     @DisplayName("should use ground move to HEL from TLL even if there is no flight")
     @Test
     void shouldConsiderCloseAirportsEvenIfThereIsNoFlightThere() {
-        double maxDistanceNotToConsiderAsHop = 101;//distance from TLL to HEL
-        pathFinder = new SmartPathFinder(maxDistanceNotToConsiderAsHop);
-        flightRepository = new FlightRepositoryImpl(Path.of("src/test/resources/flights-trimmed-3.csv"));
-        routingService = new RoutingServiceImpl(flightRepository, airportRepository, 1, groundRoutingService, 101d, pathFinder);
         Route<Airport> expectedRoute = new Route<>(toAirport("TLL")).addViaGround(toAirport("HEL")).add(toAirport("TAY"));
-
-        Route<Airport> route = routingService.findRoute("TLL", "TAY").orElse(null);
+        Route<Airport> route = routingService3.findRoute("TLL", "TAY").orElse(null);
         assertThat(route).isEqualTo(expectedRoute);
     }
 

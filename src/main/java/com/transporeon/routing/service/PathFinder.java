@@ -14,7 +14,7 @@ public interface PathFinder {
      * @return
      * @param <T>
      */
-    <T> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxHops);
+    <T> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest);
 
     record Node<T>(T value, double distance) implements Comparable<Node<T>> {
         @Override

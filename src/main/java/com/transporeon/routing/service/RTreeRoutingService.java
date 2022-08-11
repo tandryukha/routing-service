@@ -8,6 +8,7 @@ import com.github.davidmoten.rtree.geometry.Point;
 import com.github.davidmoten.rtree.geometry.Rectangle;
 import com.transporeon.routing.entity.Airport;
 import com.transporeon.routing.entity.GeoLocation;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import static java.util.stream.Collectors.toMap;
 /**
  * Uses R*-tree data structure to index airports by geo coordinates and bounding rectangle to search close airports in the R-tree
  */
+@Service
 public class RTreeRoutingService implements GroundRoutingService {
     private static final double EARTH_RADIUS = 6371.01;
 

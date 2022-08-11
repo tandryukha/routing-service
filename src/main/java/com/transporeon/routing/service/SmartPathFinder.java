@@ -17,9 +17,10 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 @RequiredArgsConstructor
 public class SmartPathFinder implements PathFinder {
     private final double hopThreshold;
+    private final int maxHops;
 
     @Override
-    public <T> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest, int maxHops) {
+    public <T> List<T> findShortestPath(Map<T, List<Node<T>>> adjacencyList, T source, T dest) {
         if (adjacencyList.isEmpty() || maxHops < 1) return emptyList();
         Map<T, Map<Integer, List<Node<T>>>> lookupTable = new HashMap<>();
         List<Node<T>> result = findShortestPathCached(adjacencyList, source, dest, maxHops, lookupTable);
