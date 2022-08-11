@@ -22,7 +22,6 @@ public class CSVTemplateRepository<T> {
         data = result;
     }
 
-
     public List<T> findAll() {
         return data;
     }

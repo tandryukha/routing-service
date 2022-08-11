@@ -13,10 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
 public class RoutingServiceImpl implements RoutingService {
@@ -32,7 +30,7 @@ public class RoutingServiceImpl implements RoutingService {
                               RoutingConfig routingConfig) {
         this.routingConfig = routingConfig;
         this.pathFinder = pathFinder;
-        airports = group(airportRepository.findAll());
+        airports = airportRepository.findAllGrouped();
         airportFlights = group(flightRepository.findAll(), airports);
         merge(airportFlights, getCloseAirports(groundRoutingService, routingConfig));
     }
@@ -61,20 +59,10 @@ public class RoutingServiceImpl implements RoutingService {
         }
     }
 
-    private static Map<String, Airport> group(List<Airport> airports) {
-        return airports.stream()
-                .filter(RoutingServiceImpl::isValid)
-                .collect(toMap(Airport::getIataCode, Function.identity(), (airport, airport2) -> airport));
-    }
-
     private Map<Airport, List<Node<Airport>>> group(List<Flight> flights, Map<String, Airport> airports) {
         return flights.stream()
                 .collect(groupingBy(flight -> airports.get(flight.getSourceAirport()),
                         mapping(flight -> toAirportNode(airports, flight), toList())));
-    }
-
-    private static boolean isValid(Airport airport) {
-        return isNotBlank(airport.getIataCode());
     }
 
     private Node<Airport> toAirportNode(Map<String, Airport> airports, Flight flight) {
