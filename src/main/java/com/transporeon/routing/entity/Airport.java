@@ -15,7 +15,6 @@ public class Airport implements Locatable<Airport> {
     private String elevationFt;
     private String continent;
     private String country;
-    private String region;
     private String municipality;
     private String gpsCode;
     @EqualsAndHashCode.Include
